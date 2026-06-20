@@ -1,6 +1,6 @@
 using Godot;
 
-public partial class PlayableCharacter : CharacterBody2D, IMoveable
+public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 {
 	// Action constants
 	private const string MoveUpAction = "move_up";
@@ -13,7 +13,11 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable
 	// Movement properties
 	[Export] public float Speed = 150.0f;
 	[Export] public float RunSpeed = 250.0f;
-	[Export] public FacingDirection CurrentFacing = FacingDirection.DOWN;
+	[Export] public FacingDirection InitialFacing = FacingDirection.DOWN;
+
+	// === Status properties ===
+	[Export] public int MaxHealth = 3;
+	[Export] public EntityState InitialState = EntityState.ACTIVE;
 
 	// Interaction properties
 	[Export] public float InteractionRange = 16.0f;
@@ -34,19 +38,54 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable
 	[Export] public string AnimIdleLeft = "mc_idle_left";
 	[Export] public string AnimIdleRight = "mc_idle_right";
 
+
 	// Private fields
 	private AnimatedSprite2D _animatedSprite;
+	private FacingDirection _currentFacing;
 	private Item _currentItem;
+	private int _currentHealth;
+	private EntityState _currentState;
+	private bool _isDead = false;
 
 	public override void _Ready()
 	{
+		_currentHealth = MaxHealth;
+		_currentFacing = InitialFacing;
+		SetState(InitialState);
 		PlayIdleAnimation();
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
+		if (_currentState != EntityState.ACTIVE) return;
+
 		HandleMovementInput();
 		HandleInteractionInput();
+	}
+
+
+	// === Getters ===
+	public bool IsDead => _isDead;
+	public FacingDirection Facing => _currentFacing;
+    public EntityState State => _currentState;
+
+
+	// === Setter ===
+	public void SetCurrentItem(Item item)
+	{
+		_currentItem = item;
+	}
+
+	public void SetState(EntityState state)
+	{
+		if (_isDead && state == EntityState.ACTIVE) return;
+
+    	_currentState = state;
+    	Visible = state != EntityState.HIDDEN;
+    	if (state != EntityState.ACTIVE)
+		{
+        	Velocity = Vector2.Zero;
+		}
 	}
 
 
@@ -59,7 +98,7 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable
 
 		if (inputDirection != Vector2.Zero)
 		{
-			CurrentFacing = FacingDirectionFromVector(inputDirection);
+			_currentFacing = FacingDirectionFromVector(inputDirection);
 
 			bool isRunning = Input.IsActionPressed(RunAction);
 			if (isRunning)
@@ -112,7 +151,7 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable
 
 	private void PlayWalkAnimation()
 	{
-		string animName = CurrentFacing switch
+		string animName = _currentFacing switch
 		{
 			FacingDirection.UP => AnimWalkUp,
 			FacingDirection.DOWN => AnimWalkDown,
@@ -125,7 +164,7 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable
 
 	private void PlayRunAnimation()
 	{
-		string animName = CurrentFacing switch
+		string animName = _currentFacing switch
 		{
 			FacingDirection.UP => AnimRunUp,
 			FacingDirection.DOWN => AnimRunDown,
@@ -138,7 +177,7 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable
 
 	private void PlayIdleAnimation()
 	{
-		string animName = CurrentFacing switch
+		string animName = _currentFacing switch
 		{
 			FacingDirection.UP => AnimIdleUp,
 			FacingDirection.DOWN => AnimIdleDown,
@@ -184,7 +223,7 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable
 		Vector2 dir;
 		float halfSpriteAlongFacing;
 
-		switch (CurrentFacing)
+		switch (_currentFacing)
 		{
 			case FacingDirection.UP:
 				size = new Vector2(spriteWidth, InteractionRange);
@@ -266,9 +305,9 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable
 			return;
 		}
 
-		if (CurrentItem != null)
+		if (_currentItem != null)
 		{
-			UseItemOn(CurrentItem, target);
+			UseItemOn(_currentItem, target);
 		}
 		else
 		{
@@ -287,9 +326,27 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable
 	}
 
 
-	// === Setter ===
-	public void SetCurrentItem(Item item)
+	// === Damage ===
+	public void TakeDamage(int damage, Node2D source)
 	{
-		_currentItem = item;
-	} 
+		if (_isDead) return;
+		if (_currentState != EntityState.ACTIVE) return;
+
+		_currentHealth -= damage;
+
+		if (_currentHealth <= 0)
+		{
+			Die(source);
+		}
+	}
+
+	public void Die(Node2D source)
+	{
+		if (_isDead) return;
+
+		_isDead = true;
+		SetState(EntityState.FROZEN);
+
+		//GetTree().CallGroup("GameManager", "OnPlayerDied", source);
+	}
 }
