@@ -34,11 +34,9 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable
 	[Export] public string AnimIdleLeft = "mc_idle_left";
 	[Export] public string AnimIdleRight = "mc_idle_right";
 
-	// Public fields
-	public Item CurrentItem { get; set; } = null;
-
 	// Private fields
 	private AnimatedSprite2D _animatedSprite;
+	private Item _currentItem;
 
 	public override void _Ready()
 	{
@@ -287,4 +285,11 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable
 	{
 		target.InteractWithItem(item);
 	}
+
+
+	// === Setter ===
+	public void SetCurrentItem(Item item)
+	{
+		_currentItem = item;
+	} 
 }
