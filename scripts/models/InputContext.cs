@@ -1,0 +1,9 @@
+public enum InputContext
+{
+	GAMEPLAY,
+	DIALOG,
+	INVENTORY,
+	MENU,
+	CUTSCENE,
+	TRANSITION
+}

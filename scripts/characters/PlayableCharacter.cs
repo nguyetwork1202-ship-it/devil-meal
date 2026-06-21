@@ -15,7 +15,7 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 	[Export] public float RunSpeed { get; private set; } = 250.0f;
 	[Export] public FacingDirection InitialFacing { get; private set; } = FacingDirection.DOWN;
 
-	// === Status properties ===
+	// Status properties
 	[Export] public int MaxHealth { get; private set; } = 3;
 	[Export] public EntityState InitialState { get; private set; } = EntityState.ACTIVE;
 
