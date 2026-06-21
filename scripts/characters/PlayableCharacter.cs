@@ -11,32 +11,32 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 	private const string InteractAction = "interact";
 
 	// Movement properties
-	[Export] public float Speed = 150.0f;
-	[Export] public float RunSpeed = 250.0f;
-	[Export] public FacingDirection InitialFacing = FacingDirection.DOWN;
+	[Export] public float Speed { get; private set; } = 150.0f;
+	[Export] public float RunSpeed { get; private set; } = 250.0f;
+	[Export] public FacingDirection InitialFacing { get; private set; } = FacingDirection.DOWN;
 
 	// === Status properties ===
-	[Export] public int MaxHealth = 3;
-	[Export] public EntityState InitialState = EntityState.ACTIVE;
+	[Export] public int MaxHealth { get; private set; } = 3;
+	[Export] public EntityState InitialState { get; private set; } = EntityState.ACTIVE;
 
 	// Interaction properties
-	[Export] public float InteractionRange = 16.0f;
+	[Export] public float InteractionRange { get; private set; } = 16.0f;
 	// Physics layer the IInteractables live on, used for interaction raycasting
-	[Export(PropertyHint.Layers2DPhysics)] public uint InteractionMask = 1;
+	[Export(PropertyHint.Layers2DPhysics)] public uint InteractionMask { get; private set; } = 1;
 
 	// Animation properties
-	[Export] public string AnimWalkUp = "mc_walk_up";
-	[Export] public string AnimWalkDown = "mc_walk_down";
-	[Export] public string AnimWalkLeft = "mc_walk_left";
-	[Export] public string AnimWalkRight = "mc_walk_right";
-	[Export] public string AnimRunUp = "mc_run_up";
-	[Export] public string AnimRunDown = "mc_run_down";
-	[Export] public string AnimRunLeft = "mc_run_left";
-	[Export] public string AnimRunRight = "mc_run_right";
-	[Export] public string AnimIdleUp = "mc_idle_up";
-	[Export] public string AnimIdleDown = "mc_idle_down";
-	[Export] public string AnimIdleLeft = "mc_idle_left";
-	[Export] public string AnimIdleRight = "mc_idle_right";
+	[Export] public string AnimWalkUp { get; private set; } = "mc_walk_up";
+	[Export] public string AnimWalkDown { get; private set; } = "mc_walk_down";
+	[Export] public string AnimWalkLeft { get; private set; } = "mc_walk_left";
+	[Export] public string AnimWalkRight { get; private set; } = "mc_walk_right";
+	[Export] public string AnimRunUp { get; private set; } = "mc_run_up";
+	[Export] public string AnimRunDown { get; private set; } = "mc_run_down";
+	[Export] public string AnimRunLeft { get; private set; } = "mc_run_left";
+	[Export] public string AnimRunRight { get; private set; } = "mc_run_right";
+	[Export] public string AnimIdleUp { get; private set; } = "mc_idle_up";
+	[Export] public string AnimIdleDown { get; private set; } = "mc_idle_down";
+	[Export] public string AnimIdleLeft { get; private set; } = "mc_idle_left";
+	[Export] public string AnimIdleRight { get; private set; } = "mc_idle_right";
 
 
 	// Private fields
@@ -67,7 +67,7 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 	// === Getters ===
 	public bool IsDead => _isDead;
 	public FacingDirection Facing => _currentFacing;
-    public EntityState State => _currentState;
+	public EntityState State => _currentState;
 
 
 	// === Setter ===
@@ -80,11 +80,11 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 	{
 		if (_isDead && state == EntityState.ACTIVE) return;
 
-    	_currentState = state;
-    	Visible = state != EntityState.HIDDEN;
-    	if (state != EntityState.ACTIVE)
+		_currentState = state;
+		Visible = state != EntityState.HIDDEN;
+		if (state != EntityState.ACTIVE)
 		{
-        	Velocity = Vector2.Zero;
+			Velocity = Vector2.Zero;
 		}
 	}
 
