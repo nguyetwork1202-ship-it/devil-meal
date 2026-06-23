@@ -1,5 +1,4 @@
 using Godot;
-using System;
 
 public partial class PlayableCharacterManager : Node, IInputContextHandler
 {
@@ -34,7 +33,6 @@ public partial class PlayableCharacterManager : Node, IInputContextHandler
         	HandleReturningToGameplay(previousContext);
     	}
 	}
-
 	private void HandleLeavingGameplay(InputContext currentContext)
 	{
     	switch (currentContext)
@@ -52,7 +50,6 @@ public partial class PlayableCharacterManager : Node, IInputContextHandler
     			break;
     	}
 	}
-
 	private void HandleReturningToGameplay(InputContext previousContext)
 	{
     	switch (previousContext)
@@ -66,12 +63,10 @@ public partial class PlayableCharacterManager : Node, IInputContextHandler
             	break;
     	}
 	}
-
 	private void SnapshotCharacterConfig()
 	{
 		CharacterConfig = _player.getCurrentConfig();
 	}
-
 	private void ApplyCharacterConfig()
 	{
 		_player.ApplyConfig(CharacterConfig);
