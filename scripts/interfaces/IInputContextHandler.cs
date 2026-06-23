@@ -1,5 +1,5 @@
 public interface IInputContextHandler
 {
     InputContext Context { get; }
-    void OnInputContextChanged(InputContext context);
+    void OnInputContextChanged(InputContext previousContext, InputContext currentContext);
 }

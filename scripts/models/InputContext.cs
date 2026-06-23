@@ -1,9 +1,10 @@
 public enum InputContext
 {
 	GAMEPLAY,
-	DIALOG,
+	DIALOGUE,
 	INVENTORY,
 	MENU,
 	CUTSCENE,
-	TRANSITION
+	TRANSITION,
+	NONE
 }
