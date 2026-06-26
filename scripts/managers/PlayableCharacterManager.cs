@@ -2,7 +2,7 @@ using Godot;
 
 public partial class PlayableCharacterManager : Node, IInputContextHandler
 {
-	[Export] public PlayableCharacterConfig CharacterConfig { get; private set; }
+	[Export] public PlayableCharacterConfig CharacterConfig { get; set; }
 	private PlayableCharacter _player;
 
 	public InputContext Context => InputContext.GAMEPLAY;
