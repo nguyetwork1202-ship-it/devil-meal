@@ -7,5 +7,5 @@ public partial class MenuItem : Resource
 	[Export] public string ParentId { get; set; }
 	[Export] public string Label { get; set; }
 	[Export] public MenuAction Action { get; set; }
-	[Export] public String ActionTarget {get; set;}
+	[Export] public string ActionTarget {get; set;}
 }

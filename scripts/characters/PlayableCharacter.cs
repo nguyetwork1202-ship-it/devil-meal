@@ -2,14 +2,6 @@ using Godot;
 
 public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 {
-	// Action constants
-	private const string MoveUpAction = "move_up";
-	private const string MoveDownAction = "move_down";
-	private const string MoveLeftAction = "move_left";
-	private const string MoveRightAction = "move_right";
-	private const string RunAction = "run";
-	private const string InteractAction = "interact";
-
 	// Animation properties
 	private AnimatedSprite2D _animatedSprite;
 	private FacingDirection _currentFacing;
@@ -129,14 +121,15 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 	private void HandleMovementInput()
 	{
 		Vector2 inputDirection = Input.GetVector(
-			MoveLeftAction, MoveRightAction, MoveUpAction, MoveDownAction
+			GlobalVariables.MoveLeftAction, GlobalVariables.MoveRightAction,
+			GlobalVariables.MoveUpAction, GlobalVariables.MoveDownAction
 		);
 
 		if (inputDirection != Vector2.Zero)
 		{
 			_currentFacing = FacingDirectionFromVector(inputDirection);
 
-			bool isRunning = Input.IsActionPressed(RunAction);
+			bool isRunning = Input.IsActionPressed(GlobalVariables.RunAction);
 			if (isRunning)
 			{
 				Run(inputDirection);
@@ -319,7 +312,7 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 	}
 	private void HandleInteractionInput()
 	{
-		if (!Input.IsActionJustPressed(InteractAction))
+		if (!Input.IsActionJustPressed(GlobalVariables.InteractAction))
 		{
 			return;
 		}
