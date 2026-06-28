@@ -2,7 +2,9 @@ using Godot;
 
 public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 {
-	[Signal] public delegate void OnPlayableCharacterDeathEventHandler(Node2D source);
+	[Signal] public delegate void DiedEventHandler(Node2D source);
+	[Signal] public delegate void OpenInventoryEventHandler();
+	[Signal] public delegate void OpenMenuEventHandler(MenuType menuType);
 
 	// Animation properties
 	private AnimatedSprite2D _animatedSprite;
@@ -28,20 +30,22 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 	private EntityState _currentState;
 	private bool _isDead = false;
 
+	// Movement properties
 	private float _speed;
 	private float _runSpeed;
+	private MovementAxis _lastAxis = MovementAxis.NONE;
 
 	// Interaction properties
 	private Item _currentItem;
 	private float _interactionRange;
-	private uint _interactionMask; 	// Physics layer the IInteractables live on, used for interaction raycasting
-
+	private uint _interactionMask;
 	public override void _PhysicsProcess(double delta)
 	{
 		if (_currentState != EntityState.ACTIVE) return;
 
-		HandleMovementInput();
-		HandleInteractionInput();
+		HandleMovement();
+		HandleInteraction();
+		HandleShortcuts();
 	}
 
 	// === Getters ===
@@ -120,31 +124,54 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 	}
 
 	// === Movement ===
-	private void HandleMovementInput()
+	private void HandleMovement()
 	{
-		Vector2 inputDirection = Input.GetVector(
-			GlobalVariables.MoveLeftAction, GlobalVariables.MoveRightAction,
-			GlobalVariables.MoveUpAction, GlobalVariables.MoveDownAction
-		);
+		Vector2 movementInput = GetMovementInput();
 
-		if (inputDirection != Vector2.Zero)
+		if (movementInput != Vector2.Zero)
 		{
-			_currentFacing = FacingDirectionFromVector(inputDirection);
+			_currentFacing = FacingDirectionFromVector(movementInput);
 
 			bool isRunning = Input.IsActionPressed(GlobalVariables.RunAction);
 			if (isRunning)
 			{
-				Run(inputDirection);
+				Run(movementInput);
 			}
 			else
 			{
-				Move(inputDirection);
+				Move(movementInput);
 			}
 		}
 		else
 		{
 			Stop();
 		}
+	}
+	private Vector2 GetMovementInput()
+	{
+		float horizontal = Input.GetAxis(GlobalVariables.MoveLeftAction, GlobalVariables.MoveRightAction);
+		float vertical = Input.GetAxis(GlobalVariables.MoveUpAction, GlobalVariables.MoveDownAction);
+
+		UpdateLastAxis();
+
+		if (horizontal != 0 && vertical != 0)
+		{
+			return _lastAxis == MovementAxis.HORIZONTAL
+				? new Vector2(horizontal, 0)
+				: new Vector2(0, vertical);
+		}
+
+		return new Vector2(horizontal, vertical);
+	}
+	private void UpdateLastAxis()
+	{
+		bool leftOrRightJustPressed = Input.IsActionJustPressed(GlobalVariables.MoveLeftAction)
+			|| Input.IsActionJustPressed(GlobalVariables.MoveRightAction);
+		bool upOrDownJustPressed = Input.IsActionJustPressed(GlobalVariables.MoveUpAction)
+			|| Input.IsActionJustPressed(GlobalVariables.MoveDownAction);
+
+		if (leftOrRightJustPressed) _lastAxis = MovementAxis.HORIZONTAL;
+		if (upOrDownJustPressed) _lastAxis = MovementAxis.VERTICAL;
 	}
 	public void Move(Vector2 direction)
 	{
@@ -211,7 +238,7 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 		};
 		_animatedSprite.Play(animName);
 	}
-
+	
 	// === Interaction ===
 	private Vector2 GetCurrentSpriteSize()
 	{
@@ -312,9 +339,9 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 
 		return nearest;
 	}
-	private void HandleInteractionInput()
+	private void HandleInteraction()
 	{
-		if (!Input.IsActionJustPressed(GlobalVariables.InteractAction))
+		if (!Input.IsActionJustPressed(GlobalVariables.AcceptAction))
 		{
 			return;
 		}
@@ -328,6 +355,7 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 		if (_currentItem != null)
 		{
 			UseItemOn(_currentItem, target);
+			_currentItem = null;
 		}
 		else
 		{
@@ -362,6 +390,22 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 
 		_isDead = true;
 		SetState(EntityState.FROZEN);
-		EmitSignal(SignalName.OnPlayableCharacterDeath, source);
+		EmitSignal(SignalName.Died, source);
+	}
+
+	// === Shortcut ===
+	private void HandleShortcuts()
+	{
+		if(Input.IsActionJustPressed(GlobalVariables.OpenInventoryAction))
+		{
+			EmitSignal(SignalName.OpenInventory);
+			return;
+		}
+
+		if(Input.IsActionJustPressed(GlobalVariables.OpenPauseMenu))
+		{
+			EmitSignal(SignalName.OpenMenu, Variant.From(MenuType.PAUSE));
+			return;
+		}
 	}
 }
