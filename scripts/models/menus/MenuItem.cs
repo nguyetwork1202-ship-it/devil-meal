@@ -1,4 +1,3 @@
-using System;
 using Godot;
 
 public partial class MenuItem : Resource
