@@ -3,48 +3,47 @@ using Godot;
 
 public partial class Menu : Node2D
 {
-	[Signal] public delegate void LoadSceneRequestedEventHandler(string scenePath);
+	[Signal] public delegate void LoadSceneEventHandler(string scenePath);
+	[Signal] public delegate void CloseMenuEventHandler();
 
-	private string _currentMenuId = "";
-	private int _currentIndex = 0;
-	private bool _isActive = false;
-	private Dictionary<string, List<MenuItem>> _childrenByParentId = new();
-	private Dictionary<string, MenuItem> _itemsById = new();
-	private Stack<string> _menuStack = new();
+	protected string _currentMenuId = "";
+	protected int _currentIndex = 0;
+	protected EntityState _currentState = EntityState.HIDDEN;
+	protected bool _isDestroyable = false;
+	protected Dictionary<string, List<MenuItem>> _childrenByParentId = new();
+	protected Dictionary<string, MenuItem> _itemsById = new();
+	protected Stack<string> _menuStack = new();
 
 	private Menu() {}
 	public Menu(MenuDataset dataset)
 	{
     	BuildIndex(dataset);
-		ResetMenuState();
+		ResetMenuNavigation();
 	}
 
 	public override void _Process(double delta)
 	{
-		if(!_isActive) return;
+		if(_currentState != EntityState.ACTIVE) return;
 
 		HandleBackInput();
 		HandleNavigationInput();
 		HandleConfirmInput();	
 	}
 
-	public List<MenuItem> GetCurrentMenu()
+	public List<MenuItem> CurrentMenu => _childrenByParentId.GetValueOrDefault(_currentMenuId, new()); 
+	public int CurrentIndex => _currentIndex;
+	public EntityState State => _currentState;
+
+	public void SetState(EntityState state)
 	{
-		return _childrenByParentId.GetValueOrDefault(_currentMenuId, new()); 
+		_currentState = state;
+		Visible = state != EntityState.HIDDEN;
 	}
-	public int GetCurrentIndex() => _currentIndex;
-	public bool IsActive() => _isActive;
-	public void SetActive(bool active)
+	public void ResetMenuNavigation()
 	{
-		if(_isActive == active) return;
-
-		if (active)
-		{
-			ResetMenuState();	
-		}
-
-		Visible = active;
-		_isActive = active;
+		_menuStack.Clear();
+		_currentMenuId = "";
+		_currentIndex = 0;
 	}
 
 	protected virtual void ExecuteFunction(string functionCode) {}
@@ -77,7 +76,13 @@ public partial class Menu : Node2D
 	}
 	private void NavigateBack()
 	{
-		if (_menuStack.Count == 0) return;
+		if (_menuStack.Count == 0)
+		{
+			if(_isDestroyable)
+				EmitSignal(SignalName.CloseMenu);	
+
+			return;
+		}
 		
 		_currentMenuId = _menuStack.Pop();
 		_currentIndex = 0;
@@ -94,7 +99,7 @@ public partial class Menu : Node2D
 	}
 	private void HandleNavigationInput()
 	{
-		var items = GetCurrentMenu();
+		var items = CurrentMenu;
 		if (items.Count == 0) return;
 
 		bool down = Input.IsActionJustPressed(GlobalVariables.MoveDownAction);
@@ -109,9 +114,9 @@ public partial class Menu : Node2D
 	}
 	private void HandleConfirmInput()
 	{
-		if (!Input.IsActionJustPressed(GlobalVariables.InteractAction)) return;
+		if (!Input.IsActionJustPressed(GlobalVariables.AcceptAction)) return;
 
-		var items = GetCurrentMenu();
+		var items = CurrentMenu;
 		if (items.Count == 0) return;
 
 		var item = items[_currentIndex];
@@ -122,18 +127,12 @@ public partial class Menu : Node2D
 				NavigateToMenu(item.Id);
 				break;
 			case MenuAction.LOAD_SCENE:
-				EmitSignal(SignalName.LoadSceneRequested, item.ActionTarget);
+				EmitSignal(SignalName.LoadScene, item.ActionTarget);
 				break;
 			case MenuAction.EXECUTE:
 				ExecuteFunction(item.ActionTarget);
 				break;	
 		}
-	}
-	private void ResetMenuState()
-	{
-		_menuStack.Clear();
-		_currentMenuId = "";
-    	_currentIndex = 0;
 	}
 }
 

@@ -23,8 +23,9 @@ public partial class MenuManager : Node, IInputContextHandler
 			MenuDataset dataset = kvp.Value;
 
 			Menu menu = MenuFactory.CreateMenu(type, dataset);
-			_menuInstances.Add(type, menu);
+			menu.SetState(EntityState.HIDDEN);
 
+			_menuInstances.Add(type, menu);
 			AddChild(menu);
 		}
 
@@ -32,7 +33,7 @@ public partial class MenuManager : Node, IInputContextHandler
 	}
 	public override void _ExitTree()
 	{
-		InputContextManager.Instance.Unregister(this);
+		InputContextManager.Instance?.Unregister(this);
 	}
 
 	public void OnInputContextChanged(InputContext previousContext, InputContext currentContext)
@@ -47,35 +48,46 @@ public partial class MenuManager : Node, IInputContextHandler
 			HandleReturningToMenu(previousContext);
 		}	
     }
+	public void OnSceneChanged()
+	{
+		foreach (var menu in _menuInstances.Values)
+		{
+			menu.SetState(EntityState.HIDDEN);
+			AddChild(menu);
+		}
+	}
 
+	private void HandleReturningToMenu(InputContext previousContext)
+	{
+		if(_activeMenuType != MenuType.NONE)
+			_menuInstances[_activeMenuType].SetState(EntityState.HIDDEN);
+
+		_activeMenuType = MenuType;
+		
+		switch(previousContext)
+		{
+			case InputContext.GAMEPLAY or
+				 InputContext.CUTSCENE or
+				 InputContext.NONE:
+				_menuInstances[_activeMenuType].SetState(EntityState.ACTIVE);
+				_menuInstances[_activeMenuType].ResetMenuNavigation();
+				break;
+			case InputContext.INVENTORY:
+				_menuInstances[_activeMenuType].SetState(EntityState.ACTIVE);
+				break;
+		}
+	}
 	private void HandleLeavingMenu(InputContext currentContext)
 	{
 		switch (currentContext)
 		{
-			default:
-				if(_activeMenuType == MenuType.NONE) return;
-
-				_menuInstances[_activeMenuType].SetActive(false);
+			case InputContext.GAMEPLAY:
+				_menuInstances[_activeMenuType].SetState(EntityState.HIDDEN);
 				_activeMenuType = MenuType.NONE;
-
+				break;
+			case InputContext.INVENTORY or InputContext.SCENE_TRANSITION:
+				_menuInstances[_activeMenuType].SetState(EntityState.FROZEN);
 				break;
 		}
 	}
-	private void HandleReturningToMenu(InputContext previousContext)
-	{
-		switch(previousContext)
-		{
-			default:
-				if(_activeMenuType == MenuType) return;
-
-				if(_activeMenuType != MenuType.NONE)
-					_menuInstances[_activeMenuType].SetActive(false);
-
-				_activeMenuType = MenuType;
-				_menuInstances[_activeMenuType].SetActive(true);
-
-				break;
-		}
-	}
-
 }

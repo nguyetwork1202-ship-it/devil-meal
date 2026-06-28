@@ -3,24 +3,11 @@ using Godot;
 
 public partial class InputContextManager : Node
 {
-	[Export] public InputContext InitialContext { get; private set; } = InputContext.GAMEPLAY;
-
 	public static InputContextManager Instance { get; private set; }
-    public InputContext Current => Instance._stack.Count > 0 ? Instance._stack.Peek() : Instance.InitialContext;
+    public InputContext Current => Instance._stack.Count > 0 ? Instance._stack.Peek() : InputContext.NONE;
 
 	private readonly List<IInputContextHandler> _handlers = new();
     private readonly Stack<InputContext> _stack = new();
-
-    public override void _Ready()
-    {
-        if (Instance != null && Instance != this)
-        {
-            QueueFree();
-            return;
-        }
-        Instance = this;
-        _stack.Push(InitialContext);
-    }
 
     public void Register(IInputContextHandler handler)
     {
@@ -48,6 +35,19 @@ public partial class InputContextManager : Node
         _stack.Pop();
         Broadcast(previous);
     }
+    public void OnSceneChanged(InputContext initialContext)
+    {
+        InputContext previous = Current;
+
+        foreach (var handler in _handlers.ToArray())
+            handler.OnSceneChanged();
+            
+        _stack.Clear();
+        _stack.Push(initialContext);
+
+        Broadcast(previous);
+    }
+   
     private void Broadcast(InputContext previous)
     {
         InputContext current = Current;

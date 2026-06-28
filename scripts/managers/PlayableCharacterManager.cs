@@ -43,6 +43,19 @@ public partial class PlayableCharacterManager : Node, IInputContextHandler
 		AddChild(_player);
 	}
 
+	private void HandleReturningToGameplay(InputContext previousContext)
+	{
+    	switch (previousContext)
+    	{
+        	case InputContext.CUTSCENE or InputContext.SCENE_TRANSITION:
+            	ApplyCharacterConfig();
+            	_player.SetState(EntityState.ACTIVE);
+            	break;
+        	default: // DIALOG, INVENTORY, MENU, NONE
+            	_player.SetState(EntityState.ACTIVE);
+            	break;
+    	}
+	}
 	private void HandleLeavingGameplay(InputContext currentContext)
 	{
     	switch (currentContext)
@@ -60,19 +73,7 @@ public partial class PlayableCharacterManager : Node, IInputContextHandler
     			break;
     	}
 	}
-	private void HandleReturningToGameplay(InputContext previousContext)
-	{
-    	switch (previousContext)
-    	{
-        	case InputContext.CUTSCENE or InputContext.SCENE_TRANSITION:
-            	ApplyCharacterConfig();
-            	_player.SetState(EntityState.ACTIVE);
-            	break;
-        	default: // DIALOG, INVENTORY, MENU
-            	_player.SetState(EntityState.ACTIVE);
-            	break;
-    	}
-	}
+
 	private void SnapshotCharacterConfig()
 	{
 		CharacterConfig = _player.getCurrentConfig();
