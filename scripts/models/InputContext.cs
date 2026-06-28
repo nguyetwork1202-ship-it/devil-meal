@@ -5,6 +5,6 @@ public enum InputContext
 	INVENTORY,
 	MENU,
 	CUTSCENE,
-	TRANSITION,
+	SCENE_TRANSITION,
 	NONE
 }

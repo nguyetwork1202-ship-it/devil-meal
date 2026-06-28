@@ -22,7 +22,7 @@ public partial class PlayableCharacterManager : Node, IInputContextHandler
 	}
     public override void _ExitTree()
 	{
-		InputContextManager.Instance.Unregister(this);
+		InputContextManager.Instance?.Unregister(this);
 	}
 
 	public void OnInputContextChanged(InputContext previousContext, InputContext currentContext)
@@ -37,6 +37,12 @@ public partial class PlayableCharacterManager : Node, IInputContextHandler
         	HandleReturningToGameplay(previousContext);
     	}
 	}
+	public void OnSceneChanged()
+	{
+		_player.SetState(EntityState.HIDDEN);
+		AddChild(_player);
+	}
+
 	private void HandleLeavingGameplay(InputContext currentContext)
 	{
     	switch (currentContext)
@@ -45,11 +51,11 @@ public partial class PlayableCharacterManager : Node, IInputContextHandler
             	SnapshotCharacterConfig();
             	_player.SetState(EntityState.HIDDEN);
             	break;
-        	case InputContext.TRANSITION:
+        	case InputContext.SCENE_TRANSITION:
             	SnapshotCharacterConfig();
             	_player.SetState(EntityState.FROZEN);
             	break;
-        	default:
+        	default: // DIALOG, INVENTORY, MENU
             	_player.SetState(EntityState.FROZEN);
     			break;
     	}
@@ -58,11 +64,11 @@ public partial class PlayableCharacterManager : Node, IInputContextHandler
 	{
     	switch (previousContext)
     	{
-        	case InputContext.CUTSCENE:
+        	case InputContext.CUTSCENE or InputContext.SCENE_TRANSITION:
             	ApplyCharacterConfig();
             	_player.SetState(EntityState.ACTIVE);
             	break;
-        	default:
+        	default: // DIALOG, INVENTORY, MENU
             	_player.SetState(EntityState.ACTIVE);
             	break;
     	}
