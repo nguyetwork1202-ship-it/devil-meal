@@ -3,11 +3,15 @@ using Godot;
 public partial class PlayableCharacterManager : Node, IInputContextHandler
 {
 	[Export] public PlayableCharacterConfig CharacterConfig { get; set; }
+	public static PlayableCharacterManager Instance { get; private set; }
+	public InputContext Context => InputContext.GAMEPLAY;
+
 	private PlayableCharacter _player;
 
-	public InputContext Context => InputContext.GAMEPLAY;
 	public override void _Ready() 
 	{
+		Instance = this;
+
 		_player = new PlayableCharacter();
 		_player.ApplyConfig(CharacterConfig);
 		_player.SetState(EntityState.HIDDEN);
@@ -23,12 +27,12 @@ public partial class PlayableCharacterManager : Node, IInputContextHandler
 
 	public void OnInputContextChanged(InputContext previousContext, InputContext currentContext)
 	{
-		if (previousContext == InputContext.GAMEPLAY)
+		if (previousContext == Context)
     	{
         	HandleLeavingGameplay(currentContext);
     	}
 
-		if (currentContext == InputContext.GAMEPLAY)
+		if (currentContext == Context)
     	{
         	HandleReturningToGameplay(previousContext);
     	}

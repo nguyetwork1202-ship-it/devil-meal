@@ -2,6 +2,8 @@ using Godot;
 
 public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 {
+	[Signal] public delegate void OnPlayableCharacterDeathEventHandler(Node2D source);
+
 	// Animation properties
 	private AnimatedSprite2D _animatedSprite;
 	private FacingDirection _currentFacing;
@@ -360,7 +362,6 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 
 		_isDead = true;
 		SetState(EntityState.FROZEN);
-
-		//GetTree().CallGroup("GameManager", "OnPlayerDied", source);
+		EmitSignal(SignalName.OnPlayableCharacterDeath, source);
 	}
 }
