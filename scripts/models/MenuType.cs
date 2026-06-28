@@ -2,5 +2,6 @@ public enum MenuType
 {
     START,
     PAUSE,
-    GAME_OVER
+    GAME_OVER,
+    NONE
 }

@@ -4,9 +4,11 @@ using Godot.Collections;
 public partial class MenuManager : Node, IInputContextHandler
 {
 	[Export] public Dictionary<MenuType, MenuDataset> MenuDatasets { get; private set; }
-	[Export] public MenuType MenuType { get; set; }
+	[Export] public MenuType MenuType { get; set; } = MenuType.NONE;
 
 	public static MenuManager Instance { get; private set; }
+	
+	private MenuType _activeMenuType = MenuType.NONE;
 	private Dictionary<MenuType, Menu> _menuInstances;
 
 	public InputContext Context => InputContext.MENU;
@@ -51,7 +53,11 @@ public partial class MenuManager : Node, IInputContextHandler
 		switch (currentContext)
 		{
 			default:
-				_menuInstances[MenuType].SetActive(false);			
+				if(_activeMenuType == MenuType.NONE) return;
+
+				_menuInstances[_activeMenuType].SetActive(false);
+				_activeMenuType = MenuType.NONE;
+
 				break;
 		}
 	}
@@ -60,7 +66,14 @@ public partial class MenuManager : Node, IInputContextHandler
 		switch(previousContext)
 		{
 			default:
-				_menuInstances[MenuType].SetActive(true);
+				if(_activeMenuType == MenuType) return;
+
+				if(_activeMenuType != MenuType.NONE)
+					_menuInstances[_activeMenuType].SetActive(false);
+
+				_activeMenuType = MenuType;
+				_menuInstances[_activeMenuType].SetActive(true);
+
 				break;
 		}
 	}
