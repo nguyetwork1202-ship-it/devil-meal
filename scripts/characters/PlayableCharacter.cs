@@ -33,12 +33,14 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 	// Movement properties
 	private float _speed;
 	private float _runSpeed;
+	private uint _solidMask;
 	private MovementAxis _lastAxis = MovementAxis.NONE;
 
 	// Interaction properties
 	private Item _currentItem;
 	private float _interactionRange;
 	private uint _interactionMask;
+
 	public override void _PhysicsProcess(double delta)
 	{
 		if (_currentState != EntityState.ACTIVE) return;
@@ -64,6 +66,7 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 			RunSpeed = _runSpeed,
 			InteractionRange = _interactionRange,
 			InteractionMask = _interactionMask,
+			SolidMask = _solidMask,
  			AnimWalkUp = _animWalkUp,
     		AnimWalkDown = _animWalkDown,
     		AnimWalkLeft = _animWalkLeft,
@@ -98,6 +101,8 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 	public void ApplyConfig(PlayableCharacterConfig config)
 	{
 		Position = new Vector2(config.PosX, config.PosY);
+		CollisionMask = config.SolidMask;
+
 		_currentFacing = config.FacingDirection;
 		_currentHealth = config.Health;
 		
@@ -106,6 +111,7 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 		
 		_interactionRange = config.InteractionRange;
 		_interactionMask = config.InteractionMask;
+		_solidMask = config.SolidMask;
 		
 		_animWalkUp = config.AnimWalkUp;
 		_animWalkDown = config.AnimWalkDown;
@@ -176,14 +182,24 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable, IDamageable
 	public void Move(Vector2 direction)
 	{
 		Velocity = direction * _speed;
-		MoveAndSlide();
+		MoveWithCollisionClamp(Velocity);
 		PlayWalkAnimation();
 	}
 	private void Run(Vector2 direction)
 	{
 		Velocity = direction * _runSpeed;
-		MoveAndSlide();
+		MoveWithCollisionClamp(Velocity);
 		PlayRunAnimation();
+	}
+	private void MoveWithCollisionClamp(Vector2 velocity)
+	{
+		Vector2 motion = velocity * (float)GetPhysicsProcessDeltaTime();
+		var collision = MoveAndCollide(motion, testOnly: true);
+
+		if (collision != null)
+			Position += collision.GetTravel();
+		else
+			Position += motion;
 	}
 	public void Stop()
 	{

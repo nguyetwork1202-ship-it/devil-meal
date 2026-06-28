@@ -16,6 +16,7 @@ public partial class PlayableCharacterConfig : Resource
 	// Interaction properties
 	[Export] public float InteractionRange { get; set; } = 16.0f;
 	[Export(PropertyHint.Layers2DPhysics)] public uint InteractionMask { get; set; } = 1;
+	[Export(PropertyHint.Layers2DPhysics)] public uint SolidMask { get; set; } = 2;
 
 	// Animation properties
 	[Export] public string AnimWalkUp { get; set; } = "mc_walk_up";
