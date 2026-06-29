@@ -47,7 +47,7 @@ public partial class Menu : Node2D
 	}
 
 	protected virtual void ExecuteFunction(string functionCode) {}
-	protected virtual void UpdateUiProperties() {}
+	protected virtual void UpdateMenuDisplay() {}
 
 	private void BuildIndex(MenuDataset dataset)
     {
@@ -72,7 +72,7 @@ public partial class Menu : Node2D
     	_currentMenuId = menuId;
     	_currentIndex = 0;
 
-		UpdateUiProperties();
+		UpdateMenuDisplay();
 	}
 	private void NavigateBack()
 	{
@@ -87,7 +87,7 @@ public partial class Menu : Node2D
 		_currentMenuId = _menuStack.Pop();
 		_currentIndex = 0;
 
-		UpdateUiProperties();
+		UpdateMenuDisplay(); 
 	}
 
 	private void HandleBackInput()
@@ -110,7 +110,7 @@ public partial class Menu : Node2D
 		else if (up)
 			_currentIndex = (_currentIndex - 1 + items.Count) % items.Count;
 
-		if (down || up) UpdateUiProperties();
+		if (down || up)  UpdateMenuDisplay();
 	}
 	private void HandleConfirmInput()
 	{
@@ -135,4 +135,3 @@ public partial class Menu : Node2D
 		}
 	}
 }
-

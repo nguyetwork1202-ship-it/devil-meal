@@ -9,14 +9,9 @@ public partial class PlayableCharacterConfig : Resource
 	[Export] public FacingDirection FacingDirection { get; set; } = FacingDirection.DOWN;
 
 	// Status properties
-	[Export] public int Health { get; set; } = 3;
 	[Export] public float Speed { get; set; } = 150.0f;
 	[Export] public float RunSpeed { get; set; } = 250.0f;
-
-	// Interaction properties
 	[Export] public float InteractionRange { get; set; } = 16.0f;
-	[Export(PropertyHint.Layers2DPhysics)] public uint InteractionMask { get; set; } = 1;
-	[Export(PropertyHint.Layers2DPhysics)] public uint SolidMask { get; set; } = 2;
 
 	// Animation properties
 	[Export] public string AnimWalkUp { get; set; } = "mc_walk_up";

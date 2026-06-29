@@ -1,5 +1,6 @@
 public partial class GlobalVariables
 {
+	// Actions
 	public const string MoveUpAction = "move_up";
 	public const string MoveDownAction = "move_down";
 	public const string MoveLeftAction = "move_left";
@@ -10,4 +11,8 @@ public partial class GlobalVariables
 	public const string BackAction = "back";
 	public const string OpenInventoryAction = "open_inventory";
 	public const string OpenPauseMenu = "open_pause_menu";
+
+	// Mask
+	public const uint InteractionMask = 1;
+	public const uint SolidMask = 2;
 }
