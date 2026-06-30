@@ -11,13 +11,17 @@ config_version=5
 [application]
 
 config/name="Devil Meal"
+run/main_scene="uid://bren4ky4qgn8n"
 config/features=PackedStringArray("4.7", "C#", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [display]
 
-window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
+window/size/viewport_width=320
+window/size/viewport_height=180
+window/size/window_width_override=960
+window/size/window_height_override=540
+window/stretch/mode="viewport"
 
 [dotnet]
 

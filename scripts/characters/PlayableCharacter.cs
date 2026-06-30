@@ -7,39 +7,38 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable
 	[Signal] public delegate void PlayDeathAnimationEventHandler(string animationName);
 
 	// Animation properties
-	private AnimatedSprite2D _animatedSprite;
-	private FacingDirection _currentFacing;
+	[Export] private AnimatedSprite2D _animatedSprite;
 	
-	private string _animWalkUp;
-	private string _animWalkDown;
-	private string _animWalkLeft;
-	private string _animWalkRight;
+	private string _animWalkUp = GlobalVariables.DefaultAnimWalkUp;
+	private string _animWalkDown = GlobalVariables.DefaultAnimWalkDown;
+	private string _animWalkLeft = GlobalVariables.DefaultAnimWalkLeft;
+	private string _animWalkRight = GlobalVariables.DefaultAnimWalkRight;
 
-	private string _animRunUp;
-	private string _animRunDown;
-	private string _animRunLeft;
-	private string _animRunRight;
+	private string _animRunUp = GlobalVariables.DefaultAnimRunUp;
+	private string _animRunDown = GlobalVariables.DefaultAnimRunDown;
+	private string _animRunLeft = GlobalVariables.DefaultAnimRunLeft;
+	private string _animRunRight = GlobalVariables.DefaultAnimRunRight;
 
-	private string _animIdleUp;
-	private string _animIdleDown;
-	private string _animIdleLeft;
-	private string _animIdleRight;
+	private string _animIdleUp = GlobalVariables.DefaultAnimIdleUp;
+	private string _animIdleDown = GlobalVariables.DefaultAnimIdleDown;
+	private string _animIdleLeft = GlobalVariables.DefaultAnimIdleLeft;
+	private string _animIdleRight = GlobalVariables.DefaultAnimIdleRight;
 
 	// Status properties
-	private EntityState _currentState;
+	private EntityState _currentState = EntityState.ACTIVE;
 
 	// Movement properties
-	private float _speed;
-	private float _runSpeed;
+	private float _speed = GlobalVariables.DefaultSpeed;
+	private float _runSpeed = GlobalVariables.DefaultRunSpeed;
 	private MovementAxis _lastAxis = MovementAxis.NONE;
 
 	// Interaction properties
-	private Item _currentItem;
-	private float _interactionRange;
+	private Item _currentItem = null;
+	private float _interactionRange = GlobalVariables.DefaultInteractionRange;
+	private FacingDirection _currentFacing = GlobalVariables.DefaultFacingDirection;
 	
 	public override void _Ready()
 	{
-		_animatedSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
 		CollisionMask = GlobalVariables.SolidMask;
 		PlayDeathAnimation += OnPlayDeathAnimation;
 	}
