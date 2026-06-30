@@ -8,6 +8,8 @@ public partial class PlayableCharacterManager : Node, IInputContextHandler
 	public static PlayableCharacterManager Instance { get; private set; }
 	public InputContext Context => InputContext.GAMEPLAY;
 
+	private PlayableCharacterManager() {}
+
 	public override void _Ready() 
 	{
 		Instance = this;

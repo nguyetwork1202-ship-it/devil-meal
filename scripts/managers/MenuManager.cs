@@ -13,6 +13,8 @@ public partial class MenuManager : Node, IInputContextHandler
 
 	public InputContext Context => InputContext.MENU;
 
+	private MenuManager() {}
+
 	public override void _Ready()
 	{
 		Instance = this;

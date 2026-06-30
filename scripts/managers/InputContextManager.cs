@@ -10,6 +10,8 @@ public partial class InputContextManager
 	private readonly List<IInputContextHandler> _handlers = new();
     private readonly Stack<InputContext> _stack = new();
 
+    private InputContextManager() {}
+
     public void Register(IInputContextHandler handler)
     {
         if (handler == null || _handlers.Contains(handler)) return;
