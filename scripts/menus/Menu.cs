@@ -4,7 +4,7 @@ using Godot;
 public partial class Menu : Node2D
 {
 	[Export] protected MenuDataset _dataset;
-	[Export] private CanvasLayer _layer;
+	[Export] protected CanvasLayer _layer;
 	[Export] protected Texture2D _backgroundTexture;
 
 	[Signal] public delegate void LoadSceneEventHandler(string scenePath);
@@ -55,8 +55,8 @@ public partial class Menu : Node2D
 		_currentIndex = 0;
 	}
 
-	protected virtual void ExecuteFunction(string functionCode) {}
 	protected virtual void DrawCurrentMenu() {}
+	protected virtual void ExecuteFunction(string functionCode) {}
 
 	private void BuildIndex(MenuDataset dataset)
     {

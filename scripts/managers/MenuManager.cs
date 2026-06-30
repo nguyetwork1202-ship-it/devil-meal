@@ -24,11 +24,11 @@ public partial class MenuManager : Node, IInputContextHandler
 			MenuType type = kvp.Key;
 			MenuDataset dataset = kvp.Value;
 
-			Menu menu = MenuFactory.CreateMenu(type, dataset);
-			menu.SetState(EntityState.HIDDEN);
+			// Menu menu = MenuFactory.CreateMenu(type, dataset);
+			// menu.SetState(EntityState.HIDDEN);
 
-			_menuInstances.Add(type, menu);
-			AddChild(menu);
+			// _menuInstances.Add(type, menu);
+			// AddChild(menu);
 		}
 
 		InputContextManager.Instance.Register(this);

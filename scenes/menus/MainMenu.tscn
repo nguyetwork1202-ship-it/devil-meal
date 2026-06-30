@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://ba1cceugnya00"]
+
+[ext_resource type="Script" uid="uid://6qfrr2ycpveh" path="res://scripts/menus/MainMenu.cs" id="1_wlpbi"]
+
+[node name="MainMenuLayer" type="CanvasLayer" unique_id=1462170400]
+
+[node name="MainMenu" type="Node" parent="." unique_id=75422168 node_paths=PackedStringArray("_layer")]
+script = ExtResource("1_wlpbi")
+_layer = NodePath("..")
