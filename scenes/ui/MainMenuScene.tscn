@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://b8h34hk8pgpps"]
+
+[ext_resource type="Script" uid="uid://dorw8pbtihc1n" path="res://scripts/managers/PlayableCharacterManager.cs" id="1_vcxc0"]
+[ext_resource type="Script" uid="uid://fbwhb5lob2h" path="res://scripts/models/characters/PlayableCharacterConfig.cs" id="2_0njy5"]
+[ext_resource type="PackedScene" uid="uid://bren4ky4qgn8n" path="res://scenes/characters/Player.tscn" id="3_eidjv"]
+
+[sub_resource type="Resource" id="Resource_sn8xv"]
+script = ExtResource("2_0njy5")
+metadata/_custom_type_script = "uid://fbwhb5lob2h"
+
+[node name="MainMenuScene" type="Node2D" unique_id=15122581]
+
+[node name="PlayableCharacterManager" type="Node" parent="." unique_id=1212473196 node_paths=PackedStringArray("_player")]
+script = ExtResource("1_vcxc0")
+CharacterConfig = SubResource("Resource_sn8xv")
+_player = NodePath("CharacterBody2D")
+
+[node name="CharacterBody2D" parent="PlayableCharacterManager" unique_id=609433527 instance=ExtResource("3_eidjv")]

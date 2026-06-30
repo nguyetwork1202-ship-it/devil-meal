@@ -3,20 +3,17 @@ using Godot;
 public partial class PlayableCharacterManager : Node, IInputContextHandler
 {
 	[Export] public PlayableCharacterConfig CharacterConfig { get; set; }
+	[Export] private PlayableCharacter _player;
+
 	public static PlayableCharacterManager Instance { get; private set; }
 	public InputContext Context => InputContext.GAMEPLAY;
-
-	private PlayableCharacter _player;
 
 	public override void _Ready() 
 	{
 		Instance = this;
 
-		_player = new PlayableCharacter();
 		_player.ApplyConfig(CharacterConfig);
 		_player.SetState(EntityState.HIDDEN);
-		
-		AddChild(_player);
 		
 		InputContextManager.Instance.Register(this);
 	}
@@ -40,7 +37,6 @@ public partial class PlayableCharacterManager : Node, IInputContextHandler
 	public void OnSceneChanged()
 	{
 		_player.SetState(EntityState.HIDDEN);
-		AddChild(_player);
 	}
 
 	private void HandleReturningToGameplay(InputContext previousContext)

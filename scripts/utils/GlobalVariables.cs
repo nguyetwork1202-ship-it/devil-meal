@@ -17,8 +17,8 @@ public partial class GlobalVariables
 	public const uint SolidMask = 2;
 
 	// Default statuses
-	public const float DefaultPosX = 0;
-	public const float DefaultPosY = 0;
+	public const float DefaultPosX = 144;
+	public const float DefaultPosY = 66;
 
 	public const float DefaultSpeed = 80.0f;
 	public const float DefaultRunSpeed = 120.0f;

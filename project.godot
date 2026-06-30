@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Devil Meal"
-run/main_scene="uid://bren4ky4qgn8n"
+run/main_scene="uid://b8h34hk8pgpps"
 config/features=PackedStringArray("4.7", "C#", "GL Compatibility")
 config/icon="res://icon.svg"
 
