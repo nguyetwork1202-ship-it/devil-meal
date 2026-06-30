@@ -17,7 +17,7 @@ public partial class PlayableCharacterManager : Node, IInputContextHandler
 		
 		InputContextManager.Instance.Register(this);
 	}
-    public override void _ExitTree()
+	public override void _ExitTree()
 	{
 		InputContextManager.Instance?.Unregister(this);
 	}
@@ -25,14 +25,14 @@ public partial class PlayableCharacterManager : Node, IInputContextHandler
 	public void OnInputContextChanged(InputContext previousContext, InputContext currentContext)
 	{
 		if (previousContext == Context)
-    	{
-        	HandleLeavingGameplay(currentContext);
-    	}
+		{
+			HandleLeavingGameplay(currentContext);
+		}
 
 		if (currentContext == Context)
-    	{
-        	HandleReturningToGameplay(previousContext);
-    	}
+		{
+			HandleReturningToGameplay(previousContext);
+		}
 	}
 	public void OnSceneChanged()
 	{
@@ -41,33 +41,33 @@ public partial class PlayableCharacterManager : Node, IInputContextHandler
 
 	private void HandleReturningToGameplay(InputContext previousContext)
 	{
-    	switch (previousContext)
-    	{
-        	case InputContext.CUTSCENE or InputContext.SCENE_TRANSITION:
-            	ApplyCharacterConfig();
-            	_player.SetState(EntityState.ACTIVE);
-            	break;
-        	default: // DIALOG, INVENTORY, MENU, NONE
-            	_player.SetState(EntityState.ACTIVE);
-            	break;
-    	}
+		switch (previousContext)
+		{
+			case InputContext.CUTSCENE or InputContext.SCENE_TRANSITION:
+				ApplyCharacterConfig();
+				_player.SetState(EntityState.ACTIVE);
+				break;
+			default: // DIALOG, INVENTORY, MENU, NONE
+				_player.SetState(EntityState.ACTIVE);
+				break;
+		}
 	}
 	private void HandleLeavingGameplay(InputContext currentContext)
 	{
-    	switch (currentContext)
-    	{
-        	case InputContext.CUTSCENE:
-            	SnapshotCharacterConfig();
-            	_player.SetState(EntityState.HIDDEN);
-            	break;
-        	case InputContext.SCENE_TRANSITION:
-            	SnapshotCharacterConfig();
-            	_player.SetState(EntityState.FROZEN);
-            	break;
-        	default: // DIALOG, INVENTORY, MENU
-            	_player.SetState(EntityState.FROZEN);
-    			break;
-    	}
+		switch (currentContext)
+		{
+			case InputContext.CUTSCENE:
+				SnapshotCharacterConfig();
+				_player.SetState(EntityState.HIDDEN);
+				break;
+			case InputContext.SCENE_TRANSITION:
+				SnapshotCharacterConfig();
+				_player.SetState(EntityState.FROZEN);
+				break;
+			default: // DIALOG, INVENTORY, MENU
+				_player.SetState(EntityState.FROZEN);
+				break;
+		}
 	}
 
 	private void SnapshotCharacterConfig()
