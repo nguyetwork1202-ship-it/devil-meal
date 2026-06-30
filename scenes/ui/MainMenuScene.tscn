@@ -8,7 +8,7 @@
 script = ExtResource("2_0njy5")
 metadata/_custom_type_script = "uid://fbwhb5lob2h"
 
-[node name="MainMenuScene" type="Node2D" unique_id=15122581]
+[node name="MainMenuScene" type="Node" unique_id=168211763]
 
 [node name="PlayableCharacterManager" type="Node" parent="." unique_id=1212473196 node_paths=PackedStringArray("_player")]
 script = ExtResource("1_vcxc0")

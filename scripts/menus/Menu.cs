@@ -3,24 +3,29 @@ using Godot;
 
 public partial class Menu : Node2D
 {
+	[Export] protected MenuDataset _dataset;
+	[Export] private CanvasLayer _layer;
+	[Export] protected Texture2D _backgroundTexture;
+
 	[Signal] public delegate void LoadSceneEventHandler(string scenePath);
 	[Signal] public delegate void CloseMenuEventHandler();
 
 	protected string _currentMenuId = "";
 	protected int _currentIndex = 0;
-	protected EntityState _currentState = EntityState.HIDDEN;
+	protected EntityState _currentState = EntityState.ACTIVE;
 	protected bool _isDestroyable = false;
 	protected Dictionary<string, List<MenuItem>> _childrenByParentId = new();
 	protected Dictionary<string, MenuItem> _itemsById = new();
 	protected Stack<string> _menuStack = new();
 
-	private Menu() {}
-	public Menu(MenuDataset dataset)
+	public override void _Ready()
 	{
-    	BuildIndex(dataset);
+		BuildIndex(_dataset);
 		ResetMenuNavigation();
-	}
+		QueueRedraw();
 
+		UILayerManager.Instance.Push(_layer);
+	}
 	public override void _Process(double delta)
 	{
 		if(_currentState != EntityState.ACTIVE) return;
@@ -38,6 +43,10 @@ public partial class Menu : Node2D
 	{
 		_currentState = state;
 		Visible = state != EntityState.HIDDEN;
+		QueueRedraw();
+
+		if(state == EntityState.HIDDEN)
+			UILayerManager.Instance.Remove(_layer);	
 	}
 	public void ResetMenuNavigation()
 	{
@@ -47,7 +56,7 @@ public partial class Menu : Node2D
 	}
 
 	protected virtual void ExecuteFunction(string functionCode) {}
-	protected virtual void UpdateMenuDisplay() {}
+	protected virtual void DrawCurrentMenu() {}
 
 	private void BuildIndex(MenuDataset dataset)
     {
@@ -72,14 +81,14 @@ public partial class Menu : Node2D
     	_currentMenuId = menuId;
     	_currentIndex = 0;
 
-		UpdateMenuDisplay();
+		QueueRedraw();
 	}
 	private void NavigateBack()
 	{
 		if (_menuStack.Count == 0)
 		{
-			if(_isDestroyable)
-				EmitSignal(SignalName.CloseMenu);	
+			if (_isDestroyable)
+				EmitSignal(SignalName.CloseMenu);
 
 			return;
 		}
@@ -87,7 +96,7 @@ public partial class Menu : Node2D
 		_currentMenuId = _menuStack.Pop();
 		_currentIndex = 0;
 
-		UpdateMenuDisplay(); 
+		QueueRedraw();
 	}
 
 	private void HandleBackInput()
@@ -110,7 +119,7 @@ public partial class Menu : Node2D
 		else if (up)
 			_currentIndex = (_currentIndex - 1 + items.Count) % items.Count;
 
-		if (down || up)  UpdateMenuDisplay();
+		if (down || up)  QueueRedraw();
 	}
 	private void HandleConfirmInput()
 	{
@@ -133,5 +142,20 @@ public partial class Menu : Node2D
 				ExecuteFunction(item.ActionTarget);
 				break;	
 		}
+	}
+
+	public override void _Draw()
+	{
+		DrawBackground();
+		DrawCurrentMenu();
+	}
+	protected virtual void DrawBackground()
+	{
+		if (_backgroundTexture == null) return;
+
+		var viewportSize = GetViewportRect().Size;
+		var rect = new Rect2(Vector2.Zero, viewportSize);
+
+		DrawTextureRect(_backgroundTexture, rect, tile: false);
 	}
 }

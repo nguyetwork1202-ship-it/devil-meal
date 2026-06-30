@@ -40,4 +40,5 @@ public partial class GlobalVariables
 	public const string DefaultAnimIdleDown = "idle_down";
 	public const string DefaultAnimIdleLeft = "idle_left";
 	public const string DefaultAnimIdleRight = "idle_right";
+
 }

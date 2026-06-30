@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public partial class InputContextManager
+public class InputContextManager
 {
 	private static InputContextManager _instance;
     
