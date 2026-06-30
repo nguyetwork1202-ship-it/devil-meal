@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://b8h34hk8pgpps"]
 
+[ext_resource type="Texture2D" uid="uid://nob6kxir6m7b" path="res://sprites/ui/main_menu_bg.png" id="1_0njy5"]
 [ext_resource type="Script" uid="uid://dorw8pbtihc1n" path="res://scripts/managers/PlayableCharacterManager.cs" id="1_vcxc0"]
 [ext_resource type="Script" uid="uid://fbwhb5lob2h" path="res://scripts/models/characters/PlayableCharacterConfig.cs" id="2_0njy5"]
 [ext_resource type="PackedScene" uid="uid://bren4ky4qgn8n" path="res://scenes/characters/Player.tscn" id="3_eidjv"]
@@ -9,6 +10,9 @@ script = ExtResource("2_0njy5")
 metadata/_custom_type_script = "uid://fbwhb5lob2h"
 
 [node name="MainMenuScene" type="Node2D" unique_id=15122581]
+
+[node name="Background" type="Sprite2D" parent="." unique_id=1920692150]
+texture = ExtResource("1_0njy5")
 
 [node name="PlayableCharacterManager" type="Node" parent="." unique_id=1212473196 node_paths=PackedStringArray("_player")]
 script = ExtResource("1_vcxc0")

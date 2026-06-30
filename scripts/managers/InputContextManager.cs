@@ -2,7 +2,9 @@ using System.Collections.Generic;
 
 public partial class InputContextManager
 {
-	public static InputContextManager Instance { get; private set; }
+	private static InputContextManager _instance;
+    
+    public static InputContextManager Instance => _instance ??= new InputContextManager();
     public InputContext Current => Instance._stack.Count > 0 ? Instance._stack.Peek() : InputContext.NONE;
 
 	private readonly List<IInputContextHandler> _handlers = new();
