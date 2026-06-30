@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using Godot;
 
-public partial class InputContextManager : Node
+public partial class InputContextManager
 {
 	public static InputContextManager Instance { get; private set; }
     public InputContext Current => Instance._stack.Count > 0 ? Instance._stack.Peek() : InputContext.NONE;
