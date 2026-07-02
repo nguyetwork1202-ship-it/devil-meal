@@ -5,7 +5,15 @@ public partial class Menu : Node2D
 {
 	[Export] protected MenuDataset _dataset;
 	[Export] protected CanvasLayer _layer;
-	[Export] protected Texture2D _backgroundTexture;
+
+	[Export] protected Font _font;
+	[Export] protected int _fontSize;
+	[Export] protected float _lineSpacing;
+	[Export] protected float _maxHeight;
+	[Export] protected HorizontalAlignment _textAlignment = HorizontalAlignment.Left;
+
+	[Export] protected Color _defaultColor = Colors.White;
+	[Export] protected Color _selectedColor = Colors.Yellow;
 
 	[Signal] public delegate void LoadSceneEventHandler(string scenePath);
 	[Signal] public delegate void CloseMenuEventHandler();
@@ -54,9 +62,6 @@ public partial class Menu : Node2D
 		_currentMenuId = "";
 		_currentIndex = 0;
 	}
-
-	protected virtual void DrawCurrentMenu() {}
-	protected virtual void ExecuteFunction(string functionCode) {}
 
 	private void BuildIndex(MenuDataset dataset)
     {
@@ -143,19 +148,43 @@ public partial class Menu : Node2D
 				break;	
 		}
 	}
+	protected virtual void ExecuteFunction(string functionCode) {}
 
 	public override void _Draw()
 	{
-		DrawBackground();
-		DrawCurrentMenu();
+		List<MenuItem> items = CurrentMenu;
+		if (items.Count == 0) return;
+
+		float lineHeight = _lineSpacing + _font.GetHeight(_fontSize);
+    	if (lineHeight <= 0) return;
+
+		int itemsPerPage = Mathf.Max(1, Mathf.FloorToInt(_maxHeight / lineHeight));
+
+		int page = _currentIndex / itemsPerPage;
+		int startIndex = page * itemsPerPage;
+		int endIndex = Mathf.Min(startIndex + itemsPerPage, items.Count);
+
+		for (int i = startIndex; i < endIndex; i++)
+		{
+			var item = items[i];
+			int visibleRow = i - startIndex;
+
+			var position = new Vector2(0, visibleRow * lineHeight);
+
+			if (i == _currentIndex)
+				DrawSelectedOption(position, item.Label);
+			else
+				DrawOption(position, item.Label);
+		}
 	}
-	protected virtual void DrawBackground()
+
+	protected virtual void DrawOption(Vector2 position, string label)
 	{
-		if (_backgroundTexture == null) return;
+		DrawString(_font, position, label, _textAlignment, -1, _fontSize, _defaultColor);
+	}
 
-		var viewportSize = GetViewportRect().Size;
-		var rect = new Rect2(Vector2.Zero, viewportSize);
-
-		DrawTextureRect(_backgroundTexture, rect, tile: false);
+	protected virtual void DrawSelectedOption(Vector2 position, string label)
+	{
+		DrawString(_font, position, label, _textAlignment, -1, _fontSize, _selectedColor);
 	}
 }

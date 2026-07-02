@@ -1,9 +1,67 @@
 [gd_scene format=3 uid="uid://ba1cceugnya00"]
 
 [ext_resource type="Script" uid="uid://6qfrr2ycpveh" path="res://scripts/menus/MainMenu.cs" id="1_wlpbi"]
+[ext_resource type="Script" uid="uid://bjalwhl3diijf" path="res://scripts/models/menus/MenuItem.cs" id="2_ldf1p"]
+[ext_resource type="Script" uid="uid://gktkctwhcb4m" path="res://scripts/models/menus/MenuDataset.cs" id="3_tyyoy"]
+[ext_resource type="Texture2D" uid="uid://nob6kxir6m7b" path="res://sprites/test-data/main_menu_bg.png" id="4_tyyoy"]
+
+[sub_resource type="Resource" id="Resource_ldf1p"]
+script = ExtResource("2_ldf1p")
+Id = "MAIN_01"
+Label = "NEW GAME"
+Action = 1
+ActionTarget = "NightmareScene"
+metadata/_custom_type_script = "uid://bjalwhl3diijf"
+
+[sub_resource type="Resource" id="Resource_46s4t"]
+script = ExtResource("2_ldf1p")
+Id = "MAIN_02"
+Label = "CONTINUE"
+Action = 1
+ActionTarget = "SaveScene"
+metadata/_custom_type_script = "uid://bjalwhl3diijf"
+
+[sub_resource type="Resource" id="Resource_x0n4n"]
+script = ExtResource("2_ldf1p")
+Id = "MAIN_03"
+Label = "SETTINGS"
+Action = 2
+ActionTarget = "SETTING_MENU"
+metadata/_custom_type_script = "uid://bjalwhl3diijf"
+
+[sub_resource type="Resource" id="Resource_v7kss"]
+script = ExtResource("2_ldf1p")
+Id = "MAIN_04"
+Label = "QUIT"
+ActionTarget = "QUIT_GAME"
+metadata/_custom_type_script = "uid://bjalwhl3diijf"
+
+[sub_resource type="Resource" id="Resource_bqojv"]
+script = ExtResource("3_tyyoy")
+Items = Array[ExtResource("2_ldf1p")]([SubResource("Resource_ldf1p"), SubResource("Resource_46s4t"), SubResource("Resource_x0n4n"), SubResource("Resource_v7kss")])
+metadata/_custom_type_script = "uid://gktkctwhcb4m"
+
+[sub_resource type="SystemFont" id="SystemFont_cty7a"]
 
 [node name="MainMenuLayer" type="CanvasLayer" unique_id=1462170400]
 
-[node name="MainMenu" type="Node" parent="." unique_id=75422168 node_paths=PackedStringArray("_layer")]
+[node name="Background" type="TextureRect" parent="." unique_id=105635190]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("4_tyyoy")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="MainMenu" type="Node2D" parent="." unique_id=811100746 node_paths=PackedStringArray("_layer")]
+position = Vector2(20, 80)
 script = ExtResource("1_wlpbi")
+_dataset = SubResource("Resource_bqojv")
 _layer = NodePath("..")
+_font = SubResource("SystemFont_cty7a")
+_fontSize = 10
+_lineSpacing = 5.0
+_maxHeight = 400.0
+_selectedColor = Color(1, 1, 0.11372549, 1)

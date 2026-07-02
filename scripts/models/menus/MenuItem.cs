@@ -1,5 +1,6 @@
 using Godot;
 
+[GlobalClass]
 public partial class MenuItem : Resource
 {
 	[Export] public string Id { get; set; }
