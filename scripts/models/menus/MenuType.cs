@@ -1,7 +1,10 @@
 public enum MenuType
 {
-    START,
+    MAIN,
     PAUSE,
     GAME_OVER,
+    SETTINGS,
+    SAVE,
+    LOAD,
     NONE
 }

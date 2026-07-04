@@ -197,7 +197,6 @@ public partial class Menu : Node2D
 				DrawOption(position, item.Label);
 		}
 	}
-
 	protected virtual void DrawOption(Vector2 position, string label)
 	{
 		DrawString(_font, position, label, _textAlignment, _longestLabelSize.X, _fontSize, _defaultColor);
