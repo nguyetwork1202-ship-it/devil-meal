@@ -26,6 +26,7 @@ public partial class GlobalVariables
 	public const FacingDirection DefaultFacingDirection = FacingDirection.DOWN;
 	public const float DefaultInteractionRange = 16.0f;
 
+	// Default animations
 	public const string DefaultAnimWalkUp = "walk_up";
 	public const string DefaultAnimWalkDown = "walk_down";
 	public const string DefaultAnimWalkLeft = "walk_left";

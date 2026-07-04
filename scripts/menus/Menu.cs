@@ -3,6 +3,10 @@ using Godot;
 
 public partial class Menu : Node2D
 {
+	[Signal] public delegate void LoadSceneEventHandler(string scenePath);
+	[Signal] public delegate void OpenMenuEventHandler(string menuId);
+	[Signal] public delegate void CloseMenuEventHandler();
+
 	[Export] protected MenuDataset _dataset;
 	[Export] protected CanvasLayer _layer;
 
@@ -15,12 +19,10 @@ public partial class Menu : Node2D
 	[Export] protected Color _defaultColor = Colors.White;
 	[Export] protected Color _selectedColor = Colors.Yellow;
 
-	[Signal] public delegate void LoadSceneEventHandler(string scenePath);
-	[Signal] public delegate void CloseMenuEventHandler();
-
 	protected string _currentMenuId = "";
 	protected int _currentIndex = 0;
 	protected EntityState _currentState = EntityState.ACTIVE;
+	protected Vector2 _longestLabelSize = Vector2.Zero;
 	protected bool _isDestroyable = false;
 	protected Dictionary<string, List<MenuItem>> _childrenByParentId = new();
 	protected Dictionary<string, MenuItem> _itemsById = new();
@@ -28,7 +30,9 @@ public partial class Menu : Node2D
 
 	public override void _Ready()
 	{
-		BuildIndex(_dataset);
+		InitializeLongestLabelSize();
+		
+		BuildIndex();
 		ResetMenuNavigation();
 		QueueRedraw();
 
@@ -63,12 +67,25 @@ public partial class Menu : Node2D
 		_currentIndex = 0;
 	}
 
-	private void BuildIndex(MenuDataset dataset)
+	private void InitializeLongestLabelSize()
+	{
+		Vector2 longest = Vector2.Zero;
+
+		foreach (var item in _dataset.Items)
+		{
+			Vector2 size = _font.GetStringSize(item.Label, _textAlignment, -1, _fontSize);
+			if (size.X > longest.X)
+				longest = size;
+		}
+
+		_longestLabelSize = longest;
+	}
+	private void BuildIndex()
     {
         _childrenByParentId.Clear();
         _itemsById.Clear();
 
-        foreach (var item in dataset.Items)
+		foreach (var item in _dataset.Items)
         {
             _itemsById[item.Id] = item;
 
@@ -137,14 +154,17 @@ public partial class Menu : Node2D
 
 		switch (item.Action)
 		{
-			case MenuAction.OPEN_SUBMENU:
-				NavigateToMenu(item.Id);
+			case MenuAction.EXECUTE:
+				ExecuteFunction(item.ActionTarget);
 				break;
 			case MenuAction.LOAD_SCENE:
 				EmitSignal(SignalName.LoadScene, item.ActionTarget);
 				break;
-			case MenuAction.EXECUTE:
-				ExecuteFunction(item.ActionTarget);
+			case MenuAction.OPEN_MENU:
+				EmitSignal(SignalName.OpenMenu, item.ActionTarget);
+				break;		
+			case MenuAction.OPEN_SUBMENU:
+				NavigateToMenu(item.Id);
 				break;	
 		}
 	}
@@ -180,11 +200,10 @@ public partial class Menu : Node2D
 
 	protected virtual void DrawOption(Vector2 position, string label)
 	{
-		DrawString(_font, position, label, _textAlignment, -1, _fontSize, _defaultColor);
+		DrawString(_font, position, label, _textAlignment, _longestLabelSize.X, _fontSize, _defaultColor);
 	}
-
 	protected virtual void DrawSelectedOption(Vector2 position, string label)
 	{
-		DrawString(_font, position, label, _textAlignment, -1, _fontSize, _selectedColor);
+		DrawString(_font, position, label, _textAlignment, _longestLabelSize.X, _fontSize, _selectedColor);
 	}
 }
