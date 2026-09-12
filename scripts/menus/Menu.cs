@@ -7,22 +7,28 @@ public partial class Menu : Node2D
 	[Signal] public delegate void OpenMenuEventHandler(string menuId);
 	[Signal] public delegate void CloseMenuEventHandler();
 
+	// Data
 	[Export] protected MenuDataset _dataset;
 	[Export] protected CanvasLayer _layer;
 
+	// Text properties
 	[Export] protected Font _font;
 	[Export] protected int _fontSize;
 	[Export] protected float _lineSpacing;
 	[Export] protected float _maxHeight;
 	[Export] protected HorizontalAlignment _textAlignment = HorizontalAlignment.Left;
-
 	[Export] protected Color _defaultColor = Colors.White;
-	[Export] protected Color _selectedColor = Colors.Yellow;
 
-	protected string _currentMenuId = "";
+	// Box properties
+	[Export] private float _boxPadding;
+	[Export] private float _boxOutlineWidth = 1f;
+	[Export] protected Color _boxOutlineColor = Colors.White;
+
+	protected string _currentMenuId = string.Empty;
+	protected Vector2 _longestLabelSize = Vector2.Zero;
+	protected Vector2 _boxSize = Vector2.Zero;
 	protected int _currentIndex = 0;
 	protected EntityState _currentState = EntityState.ACTIVE;
-	protected Vector2 _longestLabelSize = Vector2.Zero;
 	protected bool _isDestroyable = false;
 	protected Dictionary<string, List<MenuItem>> _childrenByParentId = new();
 	protected Dictionary<string, MenuItem> _itemsById = new();
@@ -30,7 +36,7 @@ public partial class Menu : Node2D
 
 	public override void _Ready()
 	{
-		InitializeLongestLabelSize();
+		CalculateBoxSize();
 		
 		BuildIndex();
 		ResetMenuNavigation();
@@ -47,10 +53,12 @@ public partial class Menu : Node2D
 		HandleConfirmInput();	
 	}
 
+	// === Getters ===
 	public List<MenuItem> CurrentMenu => _childrenByParentId.GetValueOrDefault(_currentMenuId, new()); 
 	public int CurrentIndex => _currentIndex;
 	public EntityState State => _currentState;
 
+	// === State ===
 	public void SetState(EntityState state)
 	{
 		_currentState = state;
@@ -67,18 +75,24 @@ public partial class Menu : Node2D
 		_currentIndex = 0;
 	}
 
-	private void InitializeLongestLabelSize()
+	private void CalculateBoxSize()
 	{
-		Vector2 longest = Vector2.Zero;
+		_longestLabelSize = FindLongestLabelSize();
+		_boxSize.X = _longestLabelSize.X + _boxPadding * 2;
+		_boxSize.Y = _longestLabelSize.Y + _lineSpacing;
+	}
+	private Vector2 FindLongestLabelSize()
+	{
+		Vector2 longestLabelSize = Vector2.Zero;
 
 		foreach (var item in _dataset.Items)
 		{
 			Vector2 size = _font.GetStringSize(item.Label, _textAlignment, -1, _fontSize);
-			if (size.X > longest.X)
-				longest = size;
+			if (size.X > longestLabelSize.X)
+				longestLabelSize = size;
 		}
 
-		_longestLabelSize = longest;
+		return longestLabelSize;
 	}
 	private void BuildIndex()
     {
@@ -96,12 +110,14 @@ public partial class Menu : Node2D
         }
     }
 	
+	// === Navigation ===
 	private void NavigateToMenu(string menuId)
 	{
     	_menuStack.Push(_currentMenuId);
-
     	_currentMenuId = menuId;
     	_currentIndex = 0;
+
+		CalculateBoxSize();
 
 		QueueRedraw();
 	}
@@ -121,6 +137,7 @@ public partial class Menu : Node2D
 		QueueRedraw();
 	}
 
+	// === Input Handling ===
 	private void HandleBackInput()
 	{
 		if (Input.IsActionJustPressed(GlobalVariables.BackAction))
@@ -170,6 +187,7 @@ public partial class Menu : Node2D
 	}
 	protected virtual void ExecuteFunction(string functionCode) {}
 
+	// === UI ===
 	public override void _Draw()
 	{
 		List<MenuItem> items = CurrentMenu;
@@ -203,6 +221,16 @@ public partial class Menu : Node2D
 	}
 	protected virtual void DrawSelectedOption(Vector2 position, string label)
 	{
-		DrawString(_font, position, label, _textAlignment, _longestLabelSize.X, _fontSize, _selectedColor);
+		DrawSelectedBox(position);	
+		DrawOption(position, label);
+	}
+	private void DrawSelectedBox(Vector2 position)
+	{
+		float ascent = _font.GetAscent(_fontSize);
+		Vector2 rectPosition = new Vector2(position.X - _boxPadding,
+			position.Y - ascent - _lineSpacing / 2);
+
+		Rect2 rect = new Rect2(rectPosition, _boxSize);
+		DrawRect(rect, _boxOutlineColor, filled: false, width: _boxOutlineWidth);
 	}
 }

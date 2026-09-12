@@ -3,13 +3,19 @@
 [ext_resource type="Script" uid="uid://6qfrr2ycpveh" path="res://scripts/menus/MainMenu.cs" id="1_wlpbi"]
 [ext_resource type="Script" uid="uid://bjalwhl3diijf" path="res://scripts/models/menus/MenuItem.cs" id="2_ldf1p"]
 [ext_resource type="Script" uid="uid://gktkctwhcb4m" path="res://scripts/models/menus/MenuDataset.cs" id="3_tyyoy"]
-[ext_resource type="Texture2D" uid="uid://nob6kxir6m7b" path="res://sprites/test-data/main_menu_bg.png" id="4_tyyoy"]
 [ext_resource type="FontFile" uid="uid://ctpox81p3aptl" path="res://fonts/PixelOperator.ttf" id="5_p0il0"]
+
+[sub_resource type="Gradient" id="Gradient_tyyoy"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_tyyoy"]
+gradient = SubResource("Gradient_tyyoy")
+fill_from = Vector2(1, 1)
+fill_to = Vector2(1, 1)
 
 [sub_resource type="Resource" id="Resource_ldf1p"]
 script = ExtResource("2_ldf1p")
 Id = "MAIN_01"
-Label = "NEW GAME"
+Label = "New Game"
 Action = 1
 ActionTarget = "NightmareScene"
 metadata/_custom_type_script = "uid://bjalwhl3diijf"
@@ -17,7 +23,7 @@ metadata/_custom_type_script = "uid://bjalwhl3diijf"
 [sub_resource type="Resource" id="Resource_46s4t"]
 script = ExtResource("2_ldf1p")
 Id = "MAIN_02"
-Label = "CONTINUE"
+Label = "Continue"
 Action = 3
 ActionTarget = "SAVE_MENU"
 metadata/_custom_type_script = "uid://bjalwhl3diijf"
@@ -25,7 +31,7 @@ metadata/_custom_type_script = "uid://bjalwhl3diijf"
 [sub_resource type="Resource" id="Resource_x0n4n"]
 script = ExtResource("2_ldf1p")
 Id = "MAIN_03"
-Label = "SETTINGS"
+Label = "Settings"
 Action = 3
 ActionTarget = "SETTING_MENU"
 metadata/_custom_type_script = "uid://bjalwhl3diijf"
@@ -33,7 +39,7 @@ metadata/_custom_type_script = "uid://bjalwhl3diijf"
 [sub_resource type="Resource" id="Resource_v7kss"]
 script = ExtResource("2_ldf1p")
 Id = "MAIN_04"
-Label = "EXIT"
+Label = "Exit"
 ActionTarget = "EXIT_GAME"
 metadata/_custom_type_script = "uid://bjalwhl3diijf"
 
@@ -50,21 +56,19 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("4_tyyoy")
+texture = SubResource("GradientTexture2D_tyyoy")
 expand_mode = 1
 stretch_mode = 6
 
 [node name="MainMenu" type="Node2D" parent="." unique_id=811100746 node_paths=PackedStringArray("_layer")]
 texture_filter = 1
-position = Vector2(50, 75)
+position = Vector2(130, 74)
 script = ExtResource("1_wlpbi")
-_selectedBoxPadding = 10.0
-_selectedBoxColor = Color(0.76817214, 0.7494786, 0.79018795, 0.6666667)
 _dataset = SubResource("Resource_bqojv")
 _layer = NodePath("..")
 _font = ExtResource("5_p0il0")
-_fontSize = 13
-_lineSpacing = 5.0
+_fontSize = 16
+_lineSpacing = 6.0
 _maxHeight = 400.0
 _textAlignment = 1
-_selectedColor = Color(0, 0, 0, 1)
+_boxPadding = 10.0
