@@ -72,3 +72,16 @@ _lineSpacing = 6.0
 _maxHeight = 400.0
 _textAlignment = 1
 _boxPadding = 10.0
+
+[node name="Game title" type="Label" parent="." unique_id=2046492033]
+texture_filter = 1
+anchors_preset = -1
+anchor_left = 0.259
+anchor_top = 0.18300001
+anchor_right = 0.54700005
+anchor_bottom = 0.31100002
+offset_left = -0.8800049
+offset_top = -0.94000244
+offset_right = -1.0400085
+offset_bottom = -0.98000336
+text = "DEVIL MEAL"

@@ -15,7 +15,7 @@ public partial class PlayableCharacterManager : Node, IInputContextHandler
 		Instance = this;
 
 		_player.ApplyConfig(CharacterConfig);
-		_player.SetState(EntityState.HIDDEN);
+		_player.SetState(EntityState.INACTIVE);
 		
 		InputContextManager.Instance.Register(this);
 	}
@@ -38,7 +38,7 @@ public partial class PlayableCharacterManager : Node, IInputContextHandler
 	}
 	public void OnSceneChanged()
 	{
-		_player.SetState(EntityState.HIDDEN);
+		_player.SetState(EntityState.INACTIVE);
 	}
 
 	private void HandleReturningToGameplay(InputContext previousContext)
@@ -60,14 +60,14 @@ public partial class PlayableCharacterManager : Node, IInputContextHandler
 		{
 			case InputContext.CUTSCENE:
 				SnapshotCharacterConfig();
-				_player.SetState(EntityState.HIDDEN);
+				_player.SetState(EntityState.INACTIVE);
 				break;
 			case InputContext.SCENE_TRANSITION:
 				SnapshotCharacterConfig();
-				_player.SetState(EntityState.FROZEN);
+				_player.SetState(EntityState.PAUSED);
 				break;
 			default: // DIALOG, INVENTORY, MENU
-				_player.SetState(EntityState.FROZEN);
+				_player.SetState(EntityState.PAUSED);
 				break;
 		}
 	}

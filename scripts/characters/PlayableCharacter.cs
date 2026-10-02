@@ -84,8 +84,10 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable
 	}
 	public void SetState(EntityState state)
 	{
+		if (_currentState == state) return;
 		_currentState = state;
-		Visible = state != EntityState.HIDDEN;
+
+		Visible = state != EntityState.INACTIVE;
 		if (state != EntityState.ACTIVE)
 		{
 			Velocity = Vector2.Zero;
@@ -395,7 +397,7 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable
 	// === Death ===
 	private async void OnPlayDeathAnimation(string animationName)
 	{
-		SetState(EntityState.FROZEN);
+		SetState(EntityState.PAUSED);
 		_animatedSprite.Play(animationName);
 
 		await ToSignal(_animatedSprite, AnimatedSprite2D.SignalName.AnimationFinished);
