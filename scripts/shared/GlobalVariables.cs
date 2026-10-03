@@ -10,7 +10,7 @@ public partial class GlobalVariables
 	public const string CancelAction = "cancel";
 	public const string BackAction = "back";
 	public const string OpenInventoryAction = "open_inventory";
-	public const string OpenPauseMenu = "open_pause_menu";
+	public const string OpenMenuAction = "open_menu";
 
 	// Masks
 	public const uint InteractionMask = 1;

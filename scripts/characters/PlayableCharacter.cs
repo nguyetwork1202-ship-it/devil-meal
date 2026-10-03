@@ -2,10 +2,6 @@ using Godot;
 
 public partial class PlayableCharacter : CharacterBody2D, IMoveable
 {
-	[Signal] public delegate void OpenInventoryEventHandler();
-	[Signal] public delegate void OpenMenuEventHandler(MenuType menuType);
-	[Signal] public delegate void PlayDeathAnimationEventHandler(string animationName);
-
 	// Animation properties
 	[Export] private AnimatedSprite2D _animatedSprite;
 	
@@ -40,7 +36,7 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable
 	public override void _Ready()
 	{
 		CollisionMask = GlobalVariables.SolidMask;
-		PlayDeathAnimation += OnPlayDeathAnimation;
+		SignalBus.Instance.PlayDeathAnimation += OnPlayDeathAnimation;
 	}
 	public override void _PhysicsProcess(double delta)
 	{
@@ -383,13 +379,13 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable
 	{
 		if(Input.IsActionJustPressed(GlobalVariables.OpenInventoryAction))
 		{
-			EmitSignal(SignalName.OpenInventory);
+			SignalBus.Instance.EmitSignal(SignalBus.SignalName.OpenInventory);
 			return;
 		}
 
 		if(Input.IsActionJustPressed(GlobalVariables.OpenPauseMenu))
 		{
-			EmitSignal(SignalName.OpenMenu, Variant.From(MenuType.PAUSE));
+			SignalBus.Instance.EmitSignal(SignalBus.SignalName.OpenMenu, Variant.From(MenuType.PAUSE));
 			return;
 		}
 	}
@@ -402,6 +398,6 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable
 
 		await ToSignal(_animatedSprite, AnimatedSprite2D.SignalName.AnimationFinished);
 
-		EmitSignal(SignalName.OpenMenu, Variant.From(MenuType.GAME_OVER));
+		SignalBus.Instance.EmitSignal(SignalBus.SignalName.OpenMenu, Variant.From(MenuType.GAME_OVER));
 	}
 }

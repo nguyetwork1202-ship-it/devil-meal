@@ -3,8 +3,6 @@ using System.Collections.Generic;
 
 public partial class Menu : Node2D
 {
-	[Signal] public delegate void CloseMenuEventHandler();
-
 	[Export] private CanvasLayer _layer;
 
 	[Export] private float _frameWidth = 1f;
@@ -19,13 +17,13 @@ public partial class Menu : Node2D
 	public override void _Ready()
 	{
 		 _components = new List<MenuComponent>();
-        foreach (Node child in GetChildren())
-        {
-            if (child is MenuComponent component)
-            {
-                _components.Add(component);
-            }
-        }
+		foreach (Node child in GetChildren())
+		{
+			if (child is MenuComponent component)
+			{
+				_components.Add(component);
+			}
+		}
 
 		if(_components.Count == 1)
 		{
@@ -44,12 +42,12 @@ public partial class Menu : Node2D
 		HandleSelection();
 		HandleExit();
 	}
-    public override void _Draw()
-    {
+	public override void _Draw()
+	{
 		if(_components.Count <= 1) return;
 		Rect2 rect = _components[_currentIndex].GetFrame();
 		DrawRect(rect, _frameColor, false, _frameWidth);
-    }
+	}
 
 	// === State ===
 	public EntityState State => _currentState;
@@ -71,20 +69,10 @@ public partial class Menu : Node2D
 		_isFocused = true;
 	}
 	private void HandleMovement()
-	{
-		bool down = Input.IsActionJustPressed(GlobalVariables.MoveDownAction);
-		bool up = Input.IsActionJustPressed(GlobalVariables.MoveUpAction);
-
-		if(down)
-		{
-			_currentIndex = (_currentIndex + 1) % _components.Count;
-		}
-		else if(up) 
-		{
-			_currentIndex = (_currentIndex - 1 + _components.Count) % _components.Count;
-		}
-
-		if (down || up) QueueRedraw();
+	{	
+		float movement = Input.GetAxis(GlobalVariables.MoveUpAction, GlobalVariables.MoveDownAction);
+		_currentIndex = (_currentIndex + _components.Count + (int)movement) % _components.Count;
+		if (movement != 0) QueueRedraw();
 	}
 	private void HandleSelection()
 	{
@@ -97,13 +85,15 @@ public partial class Menu : Node2D
 	{
 		if (Input.IsActionJustPressed(GlobalVariables.CancelAction) && _isDestroyable)
 		{
-			EmitSignal(SignalName.CloseMenu);
+			SignalBus.Instance.EmitSignal(SignalBus.SignalName.CloseMenu);
 		}
 	}
 
 	// === Component Callback ===
 	public void OnComponentUnfocused()
 	{
+		if(_components.Count <= 1) return;
+		_components[_currentIndex].SetState(EntityState.PAUSED);
 		_isFocused = false;
 	}
 }

@@ -1,6 +1,6 @@
 using Godot;
 
-public partial class MenuComponent : Node
+public partial class MenuComponent : Node2D
 {
 	protected EntityState _currentState;
 	protected Menu _parentMenu;
@@ -22,14 +22,25 @@ public partial class MenuComponent : Node
 	public override void _Process(double delta)
 	{
 		if(State != EntityState.ACTIVE) return;
-		OnActiveProcess(delta);
+		if(isUnfocused()) 
+		{ 
+			_parentMenu.OnComponentUnfocused();
+		}
+		else 
+		{
+			OnActiveProcess(delta);
+		}
 	}
 
 	public virtual Rect2 GetFrame()
 	{
 		return new Rect2(Vector2.Zero, Vector2.Zero);
 	}
-
+	
 	protected virtual void OnStateChanged(EntityState newState) {}
+	protected virtual bool isUnfocused()
+	{
+		return Input.IsActionJustPressed(GlobalVariables.OpenMenuAction);
+	}
 	protected virtual void OnActiveProcess(double delta) {}
 }
