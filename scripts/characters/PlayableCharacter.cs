@@ -383,7 +383,7 @@ public partial class PlayableCharacter : CharacterBody2D, IMoveable
 			return;
 		}
 
-		if(Input.IsActionJustPressed(GlobalVariables.OpenPauseMenu))
+		if(Input.IsActionJustPressed(GlobalVariables.OpenMenuAction))
 		{
 			SignalBus.Instance.EmitSignal(SignalBus.SignalName.OpenMenu, Variant.From(MenuType.PAUSE));
 			return;

@@ -1,47 +1,98 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Godot;
 
 public partial class OptionList : MenuComponent
 {
-	[Export] private float _frameWidth = 1f;
+	// === Options ===
+	[Export] private List<Option> _options;
+	[Export] private int _optionPerPage;
+
+	// === Text ===
+	[Export] private Font _font;
+	[Export] private int _fontSize;
+	[Export] private float _lineSpacing;
+	[Export] private HorizontalAlignment _textAlignment = HorizontalAlignment.Left;
+	[Export] private Color _textColor = Colors.White;
+
+	// === Frame ===
+	[Export] private float _frameWidth = 2f;
 	[Export] private Color _frameColor = Colors.White;
-	
-	private List<Option> _options;
-	private Rect2 _selectedOptionFrame;
-	private Rect2 _frame;
-	private int _currentIndex = 0;
+	[Export] private float _framePadding = 5f;
 
 	// === Execution Codes ===
 	private static string EXIT_GAME_CODE = "EXIT_GAME";
 	private static string RESUME_GAME_CODE = "RESUME_GAME";
 
+	private Vector2 _optionFrameSize = Vector2.Zero;
+	private Rect2 _frame = new Rect2(Vector2.Zero, Vector2.Zero);
+	private int _currentIndex = 0;
+
 	public override void _Ready()
 	{
-		_options = new List<Option>();
-		foreach (Node child in GetChildren())
-		{
-			if (child is Option option)
-			{
-				_options.Add(option);
-			}
-		}
+		if(_options.Count == 0) return;
+		_optionPerPage = Math.Min(_optionPerPage, _options.Count);
 
-		Option longestOption = _options.OrderByDescending(l => l.Text.Length).FirstOrDefault();
-		_selectedOptionFrame = longestOption != null ? longestOption.GetRect() : new Rect2(Vector2.Zero, Vector2.Zero);
-		_frame = longestOption != null
-			? new Rect2(longestOption.GetRect().Position, longestOption.GetRect().Size * new Vector2(1, _options.Count))
-			: new Rect2(Vector2.Zero, Vector2.Zero);
+		Option longestOption = _options.OrderByDescending(o => o.Text.Length).FirstOrDefault();
+		Vector2 longestOptionSize = _font.GetStringSize(longestOption.Text, _textAlignment, -1, _fontSize);
+
+		_optionFrameSize.X = longestOptionSize.X + _framePadding * 2;
+		_optionFrameSize.Y = longestOptionSize.Y + _lineSpacing;
+
+		float frameWidth = _optionFrameSize.X;
+		float frameHeight = longestOptionSize.Y * _optionPerPage + _lineSpacing * (_optionPerPage - 1) + _framePadding * 2;
+		_frame = new Rect2(Position, new Vector2(frameWidth, frameHeight));
+
 	}
 	public override void _Draw()
 	{
-		if(_currentState != EntityState.ACTIVE) return;
-		DrawRect(_selectedOptionFrame, _frameColor, false, _frameWidth);
+		if (_currentState == EntityState.INACTIVE || _options.Count == 0) return;
+
+		float lineHeight = _lineSpacing + _font.GetHeight(_fontSize);
+
+		int page = _currentIndex / _optionPerPage;
+		int startIndex = page * _optionPerPage;
+		int endIndex = Math.Min(startIndex + _optionPerPage, _options.Count);
+
+		for (int i = startIndex; i < endIndex; i++)
+		{
+			Option option = _options[i];
+			int visibleRow = i - startIndex;
+
+			Vector2 position = new Vector2(0, visibleRow * lineHeight);
+			DrawOption(position, option.Text);
+
+			if (_currentState == EntityState.ACTIVE && i == _currentIndex) 
+			{
+				DrawSelectedFrame(position);
+			}
+		}
+	}
+
+	private void DrawOption(Vector2 position, string text)
+	{
+		DrawString(_font, position, text, _textAlignment, _optionFrameSize.X, _fontSize, _textColor);
+	}
+	private void DrawSelectedFrame(Vector2 position)
+	{
+		float ascent = _font.GetAscent(_fontSize);
+		Vector2 rectPosition = new Vector2(position.X - _framePadding,
+			position.Y - ascent - _lineSpacing / 2);
+		Rect2 rect = new Rect2(rectPosition, _optionFrameSize);
+		DrawRect(rect, _frameColor, false, _frameWidth);
 	}
 
 	public override Rect2 GetFrame()
 	{
 		return _frame;
+	}
+	protected override void OnStateChanged(EntityState newState)
+	{
+		if(newState == EntityState.ACTIVE)
+		{
+			_currentIndex = 0;
+		}
 	}
 	protected override void OnActiveProcess(double delta)
 	{
