@@ -15,7 +15,7 @@ public partial class VolumeSlider : MenuComponent
 		_slider.MinValue = 0;
 		_slider.MaxValue = 100;
 
-		_slider.Value = AudioManager.Instance.GetMasterVolume();
+		_slider.Value = GetMasterVolume();
 		_slider.ValueChanged += OnSliderValueChanged;
 		
 		_valueLabel.Text = $"{_slider.Value}%";
@@ -34,7 +34,16 @@ public partial class VolumeSlider : MenuComponent
 
 	private void OnSliderValueChanged(double value)
 	{
-		AudioManager.Instance.SetMasterVolume(value);
+		SetMasterVolume(value);
 		_valueLabel.Text = $"{value}%";
+	}
+	private float GetMasterVolume()
+	{
+    	return SettingsManager.Instance.GetMasterVolume() * 100f;
+	}
+	private void SetMasterVolume(double value)
+	{
+    	float normalized = (float)value / 100f;
+    	SettingsManager.Instance.SetMasterVolume(normalized);
 	}
 }
