@@ -45,7 +45,7 @@ public partial class Menu : Node2D
 	public override void _Draw()
 	{
 		if(_components.Count <= 1) return;
-		Rect2 rect = _components[_currentIndex].GetFrame();
+		Rect2 rect = _components[_currentIndex].GetComponentFrame();
 		DrawRect(rect, _frameColor, false, _frameWidth);
 	}
 

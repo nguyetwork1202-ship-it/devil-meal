@@ -66,7 +66,14 @@ public partial class ScreenModeSelector : MenuComponent
     {
         return new Rect2(Vector2.Zero, Vector2.Zero);
     }
-    protected override void OnActiveProcess(double delta)
+    protected override void OnStateChanged(EntityState newState)
+    {
+        if(newState == EntityState.ACTIVE)
+		{
+			_currentIndex = 0;
+		}
+    }
+	protected override void OnActiveProcess(double delta)
     {
         HandleMovement();
 		HandleSelection();

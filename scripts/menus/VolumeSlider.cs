@@ -1,4 +1,3 @@
-using System;
 using Godot;
 
 public partial class VolumeSlider : MenuComponent
@@ -22,7 +21,7 @@ public partial class VolumeSlider : MenuComponent
 		_frame = _slider.GetRect().Grow(_framePadding);
 	}
 
-    public override Rect2 GetFrame()
+    public override Rect2 GetComponentFrame()
 	{
 		return _frame;
 	}
