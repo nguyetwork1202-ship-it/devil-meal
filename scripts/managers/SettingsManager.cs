@@ -61,6 +61,10 @@ public partial class SettingsManager : Node
 	}
 
     // === Screen mode ===
+	public DisplayServer.WindowMode GetScreenMode()
+	{
+		return DisplayServer.WindowGetMode();
+	}
     public void ApplyScreenMode(DisplayServer.WindowMode mode)
     {
         DisplayServer.WindowSetMode(mode);

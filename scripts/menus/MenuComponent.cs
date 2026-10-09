@@ -32,7 +32,7 @@ public partial class MenuComponent : Node2D
 		}
 	}
 
-	public virtual Rect2 GetFrame()
+	public virtual Rect2 GetComponentFrame()
 	{
 		return new Rect2(Vector2.Zero, Vector2.Zero);
 	}

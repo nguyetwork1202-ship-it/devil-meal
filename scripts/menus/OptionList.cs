@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Godot;
 
 public partial class OptionList : MenuComponent
 {
 	// === Options ===
-	[Export] private List<Option> _options;
+	[Export] private Option[] _options;
 	[Export] private int _optionPerPage;
 
 	// === Text ===
@@ -31,8 +30,8 @@ public partial class OptionList : MenuComponent
 
 	public override void _Ready()
 	{
-		if(_options.Count == 0) return;
-		_optionPerPage = Math.Min(_optionPerPage, _options.Count);
+		if(_options.Length == 0) return;
+		_optionPerPage = Math.Min(_optionPerPage, _options.Length);
 
 		Option longestOption = _options.OrderByDescending(o => o.Text.Length).FirstOrDefault();
 		Vector2 longestOptionSize = _font.GetStringSize(longestOption.Text, _textAlignment, -1, _fontSize);
@@ -47,13 +46,13 @@ public partial class OptionList : MenuComponent
 	}
 	public override void _Draw()
 	{
-		if (_currentState == EntityState.INACTIVE || _options.Count == 0) return;
+		if (_currentState == EntityState.INACTIVE || _options.Length == 0) return;
 
 		float lineHeight = _lineSpacing + _font.GetHeight(_fontSize);
 
 		int page = _currentIndex / _optionPerPage;
 		int startIndex = page * _optionPerPage;
-		int endIndex = Math.Min(startIndex + _optionPerPage, _options.Count);
+		int endIndex = Math.Min(startIndex + _optionPerPage, _options.Length);
 
 		for (int i = startIndex; i < endIndex; i++)
 		{
@@ -65,7 +64,7 @@ public partial class OptionList : MenuComponent
 
 			if (_currentState == EntityState.ACTIVE && i == _currentIndex) 
 			{
-				DrawSelectedFrame(position);
+				DrawSelectionFrame(position);
 			}
 		}
 	}
@@ -74,7 +73,7 @@ public partial class OptionList : MenuComponent
 	{
 		DrawString(_font, position, text, _textAlignment, _optionFrameSize.X, _fontSize, _textColor);
 	}
-	private void DrawSelectedFrame(Vector2 position)
+	private void DrawSelectionFrame(Vector2 position)
 	{
 		float ascent = _font.GetAscent(_fontSize);
 		Vector2 rectPosition = new Vector2(position.X - _framePadding,
@@ -83,7 +82,7 @@ public partial class OptionList : MenuComponent
 		DrawRect(rect, _frameColor, false, _frameWidth);
 	}
 
-	public override Rect2 GetFrame()
+	public override Rect2 GetComponentFrame()
 	{
 		return _frame;
 	}
@@ -96,7 +95,7 @@ public partial class OptionList : MenuComponent
 	}
 	protected override void OnActiveProcess(double delta)
 	{
-		if(_options.Count == 0) return;
+		if(_options.Length == 0) return;
 
 		HandleMovement();
 		HandleSelection();
@@ -105,7 +104,7 @@ public partial class OptionList : MenuComponent
 	private void HandleMovement()
 	{
 		float movement = Input.GetAxis(GlobalVariables.MoveUpAction, GlobalVariables.MoveDownAction);
-		_currentIndex = (_currentIndex + _options.Count + (int)movement) % _options.Count;
+		_currentIndex = (_currentIndex + _options.Length + (int)movement) % _options.Length;
 	}
 	private void HandleSelection()
 	{
